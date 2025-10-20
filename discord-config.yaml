@@ -1,0 +1,23 @@
+# Discord Scraper Configuration
+
+# Discord authentication
+auth:
+  cookies_file: "./cookies.json"
+
+# Playwright settings
+scraping:
+  headless: true
+  scroll_delay_ms: 1500
+  messages_per_batch: 50
+  max_retries: 3
+
+# Servers and channels to scrape
+servers:
+  # Example server configuration
+  # - id: "123456789"
+  #   name: "My Discord Server"
+  #   channels:
+  #     - id: "987654321"
+  #       name: "general"
+  #     - id: "987654322"
+  #       name: "announcements"
