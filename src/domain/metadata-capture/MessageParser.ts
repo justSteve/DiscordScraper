@@ -12,13 +12,17 @@ interface RawMessageData {
   is_pinned?: boolean;
   attachment_urls?: string[];
   embed_data?: any;
+  has_attachments: boolean;
+  has_embeds: boolean;
 }
 
 export class MessageParser {
   private channelId: string;
+  private serverId: string;
 
-  constructor(channelId: string) {
+  constructor(channelId: string, serverId: string) {
     this.channelId = channelId;
+    this.serverId = serverId;
   }
 
   parseMessage(data: RawMessageData): Message {
@@ -34,7 +38,10 @@ export class MessageParser {
       edited_timestamp: data.edited_timestamp ? new Date(data.edited_timestamp) : undefined,
       is_pinned: data.is_pinned || false,
       attachment_urls: data.attachment_urls ? JSON.stringify(data.attachment_urls) : undefined,
-      embed_data: data.embed_data ? JSON.stringify(data.embed_data) : undefined
+      embed_data: data.embed_data ? JSON.stringify(data.embed_data) : undefined,
+      message_url: `https://discord.com/channels/${this.serverId}/${this.channelId}/${data.id}`,
+      has_attachments: data.has_attachments,
+      has_embeds: data.has_embeds
     };
 
     return message;
