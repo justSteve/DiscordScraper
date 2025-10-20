@@ -1,4 +1,4 @@
-import { chromium, Browser, Page, BrowserContext, Cookie } from 'playwright';
+import { chromium, Browser, Page, Cookie } from 'playwright';
 import * as fs from 'fs';
 
 export class DiscordBrowserController {
