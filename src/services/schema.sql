@@ -59,4 +59,5 @@ CREATE TABLE IF NOT EXISTS scrape_jobs (
 CREATE INDEX IF NOT EXISTS idx_messages_channel ON messages(channel_id);
 CREATE INDEX IF NOT EXISTS idx_messages_reply ON messages(reply_to_message_id);
 CREATE INDEX IF NOT EXISTS idx_messages_timestamp ON messages(timestamp);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_messages_id ON messages(id);
 CREATE INDEX IF NOT EXISTS idx_scrape_jobs_status ON scrape_jobs(status);
