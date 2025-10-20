@@ -1,5 +1,7 @@
 import { Router } from 'express';
 import DatabaseService from '../../services/DatabaseService';
+import { ScrapeOrchestrator } from '../../domain/scrape-engine/ScrapeOrchestrator';
+import ConfigLoader from '../../config/ConfigLoader';
 
 const router = Router();
 const DB_PATH = process.env.DB_PATH || './discord-scraper.db';
@@ -9,7 +11,7 @@ const db = new DatabaseService(DB_PATH);
 // Call db.initialize() when setting up the database for the first time
 
 // POST /api/scrape/start - Start scrape job
-router.post('/start', (req, res) => {
+router.post('/start', async (req, res) => {
   try {
     const { channel_id, scrape_type } = req.body;
 
@@ -21,10 +23,22 @@ router.post('/start', (req, res) => {
       return res.status(400).json({ error: 'scrape_type must be "full" or "incremental"' });
     }
 
+    // Create job
     const jobId = db.createScrapeJob(channel_id, scrape_type);
-    res.json({ jobId, status: 'pending' });
+
+    // Load config and execute scrape synchronously
+    const config = ConfigLoader.load('./discord-config.yaml');
+    const orchestrator = new ScrapeOrchestrator(db, config);
+    await orchestrator.executeScrapeJob(jobId);
+
+    // Return completed job
+    const completedJob = db.getScrapeJob(jobId);
+    res.json(completedJob);
+
   } catch (error) {
-    res.status(500).json({ error: 'Failed to create scrape job' });
+    // Job already marked as failed by orchestrator
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    res.status(500).json({ error: errorMessage });
   }
 });
 

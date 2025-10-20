@@ -1,24 +1,13 @@
 import { Message } from '../models/types';
-
-interface RawMessageData {
-  id: string;
-  author_id: string;
-  author_name: string;
-  author_avatar_url?: string;
-  content?: string;
-  timestamp: string;
-  reply_to_message_id?: string;
-  edited_timestamp?: string;
-  is_pinned?: boolean;
-  attachment_urls?: string[];
-  embed_data?: any;
-}
+import { RawMessageData } from '../scrape-engine/dom-selectors/types';
 
 export class MessageParser {
   private channelId: string;
+  private serverId: string;
 
-  constructor(channelId: string) {
+  constructor(channelId: string, serverId: string) {
     this.channelId = channelId;
+    this.serverId = serverId;
   }
 
   parseMessage(data: RawMessageData): Message {
@@ -34,7 +23,10 @@ export class MessageParser {
       edited_timestamp: data.edited_timestamp ? new Date(data.edited_timestamp) : undefined,
       is_pinned: data.is_pinned || false,
       attachment_urls: data.attachment_urls ? JSON.stringify(data.attachment_urls) : undefined,
-      embed_data: data.embed_data ? JSON.stringify(data.embed_data) : undefined
+      embed_data: data.embed_data ? JSON.stringify(data.embed_data) : undefined,
+      message_url: `https://discord.com/channels/${this.serverId}/${this.channelId}/${data.id}`,
+      has_attachments: data.has_attachments,
+      has_embeds: data.has_embeds
     };
 
     return message;

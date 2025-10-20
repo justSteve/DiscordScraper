@@ -86,8 +86,8 @@ class DatabaseService {
       INSERT OR IGNORE INTO messages
       (id, channel_id, author_id, author_name, author_avatar_url, content,
        timestamp, reply_to_message_id, edited_timestamp, is_pinned,
-       attachment_urls, embed_data)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+       attachment_urls, embed_data, message_url, has_attachments, has_embeds)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
     stmt.run(
       message.id,
@@ -98,10 +98,13 @@ class DatabaseService {
       message.content || null,
       message.timestamp.toISOString(),
       message.reply_to_message_id || null,
-      message.edited_timestamp?.toISOString() || null,
+      message.edited_timestamp ? message.edited_timestamp.toISOString() : null,
       message.is_pinned ? 1 : 0,
       message.attachment_urls || null,
-      message.embed_data || null
+      message.embed_data || null,
+      message.message_url,
+      message.has_attachments ? 1 : 0,
+      message.has_embeds ? 1 : 0
     );
   }
 
@@ -203,7 +206,10 @@ class DatabaseService {
       edited_timestamp: row.edited_timestamp ? new Date(row.edited_timestamp) : undefined,
       is_pinned: row.is_pinned === 1,
       attachment_urls: row.attachment_urls,
-      embed_data: row.embed_data
+      embed_data: row.embed_data,
+      message_url: row.message_url,
+      has_attachments: row.has_attachments === 1,
+      has_embeds: row.has_embeds === 1
     };
   }
 

@@ -23,7 +23,10 @@ describe('ThreadAnalyzer', () => {
       author_id: 'user_1',
       author_name: 'User1',
       content: 'Root message',
-      timestamp: new Date()
+      timestamp: new Date(),
+      message_url: 'https://discord.com/channels/server_1/ch_1/msg_1',
+      has_attachments: false,
+      has_embeds: false
     };
 
     const reply1: Message = {
@@ -33,7 +36,10 @@ describe('ThreadAnalyzer', () => {
       author_name: 'User2',
       content: 'First reply',
       timestamp: new Date(),
-      reply_to_message_id: 'msg_1'
+      reply_to_message_id: 'msg_1',
+      message_url: 'https://discord.com/channels/server_1/ch_1/msg_2',
+      has_attachments: false,
+      has_embeds: false
     };
 
     const reply2: Message = {
@@ -43,7 +49,10 @@ describe('ThreadAnalyzer', () => {
       author_name: 'User3',
       content: 'Reply to reply',
       timestamp: new Date(),
-      reply_to_message_id: 'msg_2'
+      reply_to_message_id: 'msg_2',
+      message_url: 'https://discord.com/channels/server_1/ch_1/msg_3',
+      has_attachments: false,
+      has_embeds: false
     };
 
     mockDb.getReplies
@@ -67,7 +76,10 @@ describe('ThreadAnalyzer', () => {
       author_id: 'user_1',
       author_name: 'User1',
       content: 'Standalone message',
-      timestamp: new Date()
+      timestamp: new Date(),
+      message_url: 'https://discord.com/channels/server_1/ch_1/msg_1',
+      has_attachments: false,
+      has_embeds: false
     };
 
     mockDb.getReplies.mockReturnValue([]);
@@ -85,7 +97,10 @@ describe('ThreadAnalyzer', () => {
       author_id: 'user_1',
       author_name: 'User1',
       content: 'Root',
-      timestamp: new Date()
+      timestamp: new Date(),
+      message_url: 'https://discord.com/channels/server_1/ch_1/msg_1',
+      has_attachments: false,
+      has_embeds: false
     };
 
     const reply1: Message = {
@@ -95,7 +110,10 @@ describe('ThreadAnalyzer', () => {
       author_name: 'User2',
       content: 'Reply1',
       timestamp: new Date(),
-      reply_to_message_id: 'msg_1'
+      reply_to_message_id: 'msg_1',
+      message_url: 'https://discord.com/channels/server_1/ch_1/msg_2',
+      has_attachments: false,
+      has_embeds: false
     };
 
     const reply2: Message = {
@@ -105,7 +123,10 @@ describe('ThreadAnalyzer', () => {
       author_name: 'User3',
       content: 'Reply2',
       timestamp: new Date(),
-      reply_to_message_id: 'msg_2'
+      reply_to_message_id: 'msg_2',
+      message_url: 'https://discord.com/channels/server_1/ch_1/msg_3',
+      has_attachments: false,
+      has_embeds: false
     };
 
     mockDb.getReplies
@@ -126,7 +147,10 @@ describe('ThreadAnalyzer', () => {
       author_id: 'user_1',
       author_name: 'User1',
       content: 'Root',
-      timestamp: new Date()
+      timestamp: new Date(),
+      message_url: 'https://discord.com/channels/server_1/ch_1/msg_1',
+      has_attachments: false,
+      has_embeds: false
     };
 
     const reply1: Message = {
@@ -136,7 +160,10 @@ describe('ThreadAnalyzer', () => {
       author_name: 'User2',
       content: 'Reply1',
       timestamp: new Date(),
-      reply_to_message_id: 'msg_1'
+      reply_to_message_id: 'msg_1',
+      message_url: 'https://discord.com/channels/server_1/ch_1/msg_2',
+      has_attachments: false,
+      has_embeds: false
     };
 
     const reply2: Message = {
@@ -146,7 +173,10 @@ describe('ThreadAnalyzer', () => {
       author_name: 'User3',
       content: 'Reply2',
       timestamp: new Date(),
-      reply_to_message_id: 'msg_1'
+      reply_to_message_id: 'msg_1',
+      message_url: 'https://discord.com/channels/server_1/ch_1/msg_3',
+      has_attachments: false,
+      has_embeds: false
     };
 
     mockDb.getReplies

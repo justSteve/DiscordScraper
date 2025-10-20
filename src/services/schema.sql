@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS channels (
 
 -- Messages
 CREATE TABLE IF NOT EXISTS messages (
-  id TEXT PRIMARY KEY,
+  id TEXT NOT NULL,
   channel_id TEXT NOT NULL,
   author_id TEXT NOT NULL,
   author_name TEXT NOT NULL,
@@ -31,6 +31,10 @@ CREATE TABLE IF NOT EXISTS messages (
   is_pinned BOOLEAN DEFAULT 0,
   attachment_urls TEXT,
   embed_data TEXT,
+  message_url TEXT NOT NULL,
+  has_attachments BOOLEAN DEFAULT 0,
+  has_embeds BOOLEAN DEFAULT 0,
+  PRIMARY KEY (channel_id, id),
   FOREIGN KEY (channel_id) REFERENCES channels(id)
   -- FOREIGN KEY (reply_to_message_id) REFERENCES messages(id)
   -- Removed: FK constraint blocks out-of-order message scraping
@@ -55,4 +59,5 @@ CREATE TABLE IF NOT EXISTS scrape_jobs (
 CREATE INDEX IF NOT EXISTS idx_messages_channel ON messages(channel_id);
 CREATE INDEX IF NOT EXISTS idx_messages_reply ON messages(reply_to_message_id);
 CREATE INDEX IF NOT EXISTS idx_messages_timestamp ON messages(timestamp);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_messages_id ON messages(id);
 CREATE INDEX IF NOT EXISTS idx_scrape_jobs_status ON scrape_jobs(status);

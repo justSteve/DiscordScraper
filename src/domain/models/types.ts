@@ -27,6 +27,9 @@ export interface Message {
   is_pinned?: boolean;
   attachment_urls?: string; // JSON array
   embed_data?: string;      // JSON object
+  message_url: string;
+  has_attachments: boolean;
+  has_embeds: boolean;
 }
 
 export interface ScrapeJob {
