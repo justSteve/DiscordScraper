@@ -1,0 +1,83 @@
+import { Router } from 'express';
+import DatabaseService from '../../services/DatabaseService';
+
+const router = Router();
+const DB_PATH = process.env.DB_PATH || './discord-scraper.db';
+const db = new DatabaseService(DB_PATH);
+
+// Note: Database should be initialized before using routes
+// Call db.initialize() when setting up the database for the first time
+
+// POST /api/scrape/start - Start scrape job
+router.post('/start', (req, res) => {
+  try {
+    const { channel_id, scrape_type } = req.body;
+
+    if (!channel_id || !scrape_type) {
+      return res.status(400).json({ error: 'channel_id and scrape_type required' });
+    }
+
+    if (scrape_type !== 'full' && scrape_type !== 'incremental') {
+      return res.status(400).json({ error: 'scrape_type must be "full" or "incremental"' });
+    }
+
+    const jobId = db.createScrapeJob(channel_id, scrape_type);
+    res.json({ jobId, status: 'pending' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to create scrape job' });
+  }
+});
+
+// GET /api/scrape/status/:jobId - Get job status
+router.get('/status/:jobId', (req, res) => {
+  try {
+    const jobId = parseInt(req.params.jobId);
+    const job = db.getScrapeJob(jobId);
+
+    if (!job) {
+      return res.status(404).json({ error: 'Job not found' });
+    }
+
+    res.json(job);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch job status' });
+  }
+});
+
+// GET /api/scrape/jobs - List all jobs (optional status filter)
+router.get('/jobs', (req, res) => {
+  try {
+    const status = req.query.status as string | undefined;
+    const jobs = db.getAllScrapeJobs(status);
+    res.json(jobs);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch jobs' });
+  }
+});
+
+// POST /api/scrape/resume/:jobId - Resume interrupted job
+router.post('/resume/:jobId', (req, res) => {
+  try {
+    const jobId = parseInt(req.params.jobId);
+    const job = db.getScrapeJob(jobId);
+
+    if (!job) {
+      return res.status(404).json({ error: 'Job not found' });
+    }
+
+    if (job.status !== 'interrupted') {
+      return res.status(400).json({ error: 'Can only resume interrupted jobs' });
+    }
+
+    // Create new job linked to original
+    const newJobId = db.createScrapeJob(job.channel_id, job.scrape_type);
+
+    // TODO: Set resumed_from_job_id (need to add this to createScrapeJob or update separately)
+
+    res.json({ jobId: newJobId, status: 'pending' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to resume job' });
+  }
+});
+
+export default router;
