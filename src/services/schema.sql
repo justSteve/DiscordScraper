@@ -31,8 +31,9 @@ CREATE TABLE IF NOT EXISTS messages (
   is_pinned BOOLEAN DEFAULT 0,
   attachment_urls TEXT,
   embed_data TEXT,
-  FOREIGN KEY (channel_id) REFERENCES channels(id),
-  FOREIGN KEY (reply_to_message_id) REFERENCES messages(id)
+  FOREIGN KEY (channel_id) REFERENCES channels(id)
+  -- FOREIGN KEY (reply_to_message_id) REFERENCES messages(id)
+  -- Removed: FK constraint blocks out-of-order message scraping
 );
 
 -- Scrape jobs
