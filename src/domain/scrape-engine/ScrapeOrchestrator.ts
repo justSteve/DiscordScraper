@@ -37,14 +37,14 @@ export class ScrapeOrchestrator {
         throw new Error(`Job not found: ${jobId}`);
       }
 
+      // Update job status to running immediately
+      this.db.updateScrapeJobStatus(jobId, 'running');
+
       // Find server_id for this channel
       const { serverId, channelConfig } = this.findChannelInConfig(job.channel_id);
       if (!serverId || !channelConfig) {
         throw new Error(`Channel ${job.channel_id} not found in config`);
       }
-
-      // Update job status to running
-      this.db.updateScrapeJobStatus(jobId, 'running');
 
       // Initialize components
       browser = new DiscordBrowserController(this.config.scraping.headless);
@@ -65,15 +65,21 @@ export class ScrapeOrchestrator {
 
       // Scraping loop: extract, parse, store, scroll
       let atTop = false;
+      const seenMessageIds = new Set<string>();
+
       while (!atTop) {
         // Extract messages from current view
         const rawMessages = await extractor.extractMessages(page);
 
         // Parse and store each message
         for (const rawMsg of rawMessages) {
-          const message = parser.parseMessage(rawMsg);
-          this.db.insertMessage(message);
-          this.db.incrementMessagesScraped(jobId, 1);
+          // Skip if we've already processed this message
+          if (!seenMessageIds.has(rawMsg.id)) {
+            const message = parser.parseMessage(rawMsg);
+            this.db.insertMessage(message);
+            this.db.incrementMessagesScraped(jobId, 1);
+            seenMessageIds.add(rawMsg.id);
+          }
         }
 
         // Scroll up to load older messages
