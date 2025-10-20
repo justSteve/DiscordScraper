@@ -87,7 +87,10 @@ describe('DatabaseService', () => {
         author_id: 'user_1',
         author_name: 'TestUser',
         content: 'Hello',
-        timestamp: new Date()
+        timestamp: new Date(),
+        message_url: 'https://discord.com/channels/server_1/channel_1/msg_1',
+        has_attachments: false,
+        has_embeds: false
       };
 
       db.insertMessage(message);
@@ -104,7 +107,10 @@ describe('DatabaseService', () => {
         author_id: 'user_1',
         author_name: 'User1',
         content: 'First message',
-        timestamp: new Date()
+        timestamp: new Date(),
+        message_url: 'https://discord.com/channels/server_1/channel_1/msg_1',
+        has_attachments: false,
+        has_embeds: false
       };
 
       const msg2: Message = {
@@ -114,7 +120,10 @@ describe('DatabaseService', () => {
         author_name: 'User2',
         content: 'Reply to first',
         timestamp: new Date(),
-        reply_to_message_id: 'msg_1'
+        reply_to_message_id: 'msg_1',
+        message_url: 'https://discord.com/channels/server_1/channel_1/msg_2',
+        has_attachments: false,
+        has_embeds: false
       };
 
       db.insertMessage(msg1);
@@ -123,6 +132,43 @@ describe('DatabaseService', () => {
       const replies = db.getReplies('msg_1');
       expect(replies).toHaveLength(1);
       expect(replies[0].id).toBe('msg_2');
+    });
+
+    it('should prevent same message ID across different channels', () => {
+      db.insertChannel({ id: 'channel_2', server_id: 'server_1', name: 'random', message_count: 0 });
+
+      const msg1: Message = {
+        id: 'msg_1',
+        channel_id: 'channel_1',
+        author_id: 'user_1',
+        author_name: 'User1',
+        content: 'Message in channel 1',
+        timestamp: new Date(),
+        message_url: 'https://discord.com/channels/server_1/channel_1/msg_1',
+        has_attachments: false,
+        has_embeds: false
+      };
+
+      const msg2: Message = {
+        id: 'msg_1',  // Same ID, different channel
+        channel_id: 'channel_2',
+        author_id: 'user_2',
+        author_name: 'User2',
+        content: 'Attempt to use same ID in channel 2',
+        timestamp: new Date(),
+        message_url: 'https://discord.com/channels/server_1/channel_2/msg_1',
+        has_attachments: false,
+        has_embeds: false
+      };
+
+      db.insertMessage(msg1);
+      db.insertMessage(msg2);  // Should be ignored due to unique constraint
+
+      const channel1Messages = db.getMessagesByChannel('channel_1');
+      const channel2Messages = db.getMessagesByChannel('channel_2');
+
+      expect(channel1Messages).toHaveLength(1);
+      expect(channel2Messages).toHaveLength(0);  // Second insert ignored
     });
   });
 
