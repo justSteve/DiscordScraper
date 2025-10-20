@@ -12,6 +12,8 @@ export interface RawMessageData {
   reply_to_message_id?: string;
   edited_timestamp?: string;
   is_pinned?: boolean;
+  attachment_urls?: string[];
+  embed_data?: any;
   has_attachments: boolean;
   has_embeds: boolean;
 }
