@@ -31,9 +31,15 @@ describe('Domain Types', () => {
       author_name: 'TestUser',
       content: 'Hello world',
       timestamp: new Date(),
-      reply_to_message_id: 'msg_788'
+      reply_to_message_id: 'msg_788',
+      message_url: 'https://discord.com/channels/server_123/channel_456/msg_789',
+      has_attachments: false,
+      has_embeds: false
     };
     expect(message.reply_to_message_id).toBe('msg_788');
+    expect(message.message_url).toBe('https://discord.com/channels/server_123/channel_456/msg_789');
+    expect(message.has_attachments).toBe(false);
+    expect(message.has_embeds).toBe(false);
   });
 
   it('should create a valid ScrapeJob object', () => {

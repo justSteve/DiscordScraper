@@ -87,7 +87,10 @@ describe('DatabaseService', () => {
         author_id: 'user_1',
         author_name: 'TestUser',
         content: 'Hello',
-        timestamp: new Date()
+        timestamp: new Date(),
+        message_url: 'https://discord.com/channels/server_1/channel_1/msg_1',
+        has_attachments: false,
+        has_embeds: false
       };
 
       db.insertMessage(message);
@@ -104,7 +107,10 @@ describe('DatabaseService', () => {
         author_id: 'user_1',
         author_name: 'User1',
         content: 'First message',
-        timestamp: new Date()
+        timestamp: new Date(),
+        message_url: 'https://discord.com/channels/server_1/channel_1/msg_1',
+        has_attachments: false,
+        has_embeds: false
       };
 
       const msg2: Message = {
@@ -114,7 +120,10 @@ describe('DatabaseService', () => {
         author_name: 'User2',
         content: 'Reply to first',
         timestamp: new Date(),
-        reply_to_message_id: 'msg_1'
+        reply_to_message_id: 'msg_1',
+        message_url: 'https://discord.com/channels/server_1/channel_1/msg_2',
+        has_attachments: false,
+        has_embeds: false
       };
 
       db.insertMessage(msg1);

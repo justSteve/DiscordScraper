@@ -49,7 +49,7 @@ describe('End-to-End Scraping Workflow', () => {
     db.updateScrapeJobStatus(jobId, 'running');
 
     // Step 4: Simulate parsing messages with MessageParser
-    const parser = new MessageParser('channel_1');
+    const parser = new MessageParser('channel_1', 'server_1');
 
     // Create mock message data (simulating what would come from browser scraping)
     const mockMessages = [
@@ -58,7 +58,9 @@ describe('End-to-End Scraping Workflow', () => {
         author_id: 'user_1',
         author_name: 'User1',
         content: 'Hello, this is the start of a conversation',
-        timestamp: new Date('2025-10-20T10:00:00Z').toISOString()
+        timestamp: new Date('2025-10-20T10:00:00Z').toISOString(),
+        has_attachments: false,
+        has_embeds: false
       },
       {
         id: 'msg_2',
@@ -66,7 +68,9 @@ describe('End-to-End Scraping Workflow', () => {
         author_name: 'User2',
         content: 'This is a reply to the first message',
         timestamp: new Date('2025-10-20T10:01:00Z').toISOString(),
-        reply_to_message_id: 'msg_1'
+        reply_to_message_id: 'msg_1',
+        has_attachments: false,
+        has_embeds: false
       },
       {
         id: 'msg_3',
@@ -74,14 +78,18 @@ describe('End-to-End Scraping Workflow', () => {
         author_name: 'User3',
         content: 'This is a reply to the reply',
         timestamp: new Date('2025-10-20T10:02:00Z').toISOString(),
-        reply_to_message_id: 'msg_2'
+        reply_to_message_id: 'msg_2',
+        has_attachments: false,
+        has_embeds: false
       },
       {
         id: 'msg_4',
         author_id: 'user_1',
         author_name: 'User1',
         content: 'Another top-level message',
-        timestamp: new Date('2025-10-20T10:03:00Z').toISOString()
+        timestamp: new Date('2025-10-20T10:03:00Z').toISOString(),
+        has_attachments: false,
+        has_embeds: false
       }
     ];
 
@@ -165,13 +173,15 @@ describe('End-to-End Scraping Workflow', () => {
       message_count: 0
     });
 
-    const parser = new MessageParser('channel_1');
+    const parser = new MessageParser('channel_1', 'server_1');
     const messageData = {
       id: 'msg_1',
       author_id: 'user_1',
       author_name: 'User1',
       content: 'Test message',
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      has_attachments: false,
+      has_embeds: false
     };
 
     // Insert same message twice
@@ -198,14 +208,16 @@ describe('End-to-End Scraping Workflow', () => {
     const job1 = db.createScrapeJob('channel_1', 'full');
     db.updateScrapeJobStatus(job1, 'running');
 
-    const parser = new MessageParser('channel_1');
+    const parser = new MessageParser('channel_1', 'server_1');
     const initialMessages = [
       {
         id: 'msg_1',
         author_id: 'user_1',
         author_name: 'User1',
         content: 'Initial message',
-        timestamp: new Date('2025-10-20T10:00:00Z').toISOString()
+        timestamp: new Date('2025-10-20T10:00:00Z').toISOString(),
+        has_attachments: false,
+        has_embeds: false
       }
     ];
 
@@ -229,7 +241,9 @@ describe('End-to-End Scraping Workflow', () => {
         author_id: 'user_2',
         author_name: 'User2',
         content: 'New message after initial scrape',
-        timestamp: new Date('2025-10-20T11:00:00Z').toISOString()
+        timestamp: new Date('2025-10-20T11:00:00Z').toISOString(),
+        has_attachments: false,
+        has_embeds: false
       }
     ];
 
@@ -283,7 +297,7 @@ describe('End-to-End Scraping Workflow', () => {
       message_count: 0
     });
 
-    const parser = new MessageParser('channel_1');
+    const parser = new MessageParser('channel_1', 'server_1');
 
     // Create a tree structure:
     //     msg_1
@@ -298,7 +312,9 @@ describe('End-to-End Scraping Workflow', () => {
         author_id: 'user_1',
         author_name: 'User1',
         content: 'Root',
-        timestamp: new Date('2025-10-20T10:00:00Z').toISOString()
+        timestamp: new Date('2025-10-20T10:00:00Z').toISOString(),
+        has_attachments: false,
+        has_embeds: false
       },
       {
         id: 'msg_2',
@@ -306,7 +322,9 @@ describe('End-to-End Scraping Workflow', () => {
         author_name: 'User2',
         content: 'Branch 1',
         timestamp: new Date('2025-10-20T10:01:00Z').toISOString(),
-        reply_to_message_id: 'msg_1'
+        reply_to_message_id: 'msg_1',
+        has_attachments: false,
+        has_embeds: false
       },
       {
         id: 'msg_3',
@@ -314,7 +332,9 @@ describe('End-to-End Scraping Workflow', () => {
         author_name: 'User3',
         content: 'Branch 2',
         timestamp: new Date('2025-10-20T10:02:00Z').toISOString(),
-        reply_to_message_id: 'msg_1'
+        reply_to_message_id: 'msg_1',
+        has_attachments: false,
+        has_embeds: false
       },
       {
         id: 'msg_4',
@@ -322,7 +342,9 @@ describe('End-to-End Scraping Workflow', () => {
         author_name: 'User4',
         content: 'Nested reply',
         timestamp: new Date('2025-10-20T10:03:00Z').toISOString(),
-        reply_to_message_id: 'msg_2'
+        reply_to_message_id: 'msg_2',
+        has_attachments: false,
+        has_embeds: false
       }
     ];
 
