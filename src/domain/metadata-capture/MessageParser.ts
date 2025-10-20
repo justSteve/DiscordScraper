@@ -1,20 +1,5 @@
 import { Message } from '../models/types';
-
-interface RawMessageData {
-  id: string;
-  author_id: string;
-  author_name: string;
-  author_avatar_url?: string;
-  content?: string;
-  timestamp: string;
-  reply_to_message_id?: string;
-  edited_timestamp?: string;
-  is_pinned?: boolean;
-  attachment_urls?: string[];
-  embed_data?: any;
-  has_attachments: boolean;
-  has_embeds: boolean;
-}
+import { RawMessageData } from '../scrape-engine/dom-selectors/types';
 
 export class MessageParser {
   private channelId: string;
