@@ -66,12 +66,17 @@ export class ScrapeOrchestrator {
       // Scraping loop: extract, parse, store, scroll
       let atTop = false;
       const seenMessageIds = new Set<string>();
+      let scrollCount = 0;
+      const maxScrolls = 3; // Limit scrolling for testing large channels
 
-      while (!atTop) {
+      while (!atTop && scrollCount < maxScrolls) {
         // Extract messages from current view
         const rawMessages = await extractor.extractMessages(page);
 
+        console.log(`Scroll ${scrollCount + 1}: Found ${rawMessages.length} messages in view`);
+
         // Parse and store each message
+        let newMessagesThisScroll = 0;
         for (const rawMsg of rawMessages) {
           // Skip if we've already processed this message
           if (!seenMessageIds.has(rawMsg.id)) {
@@ -79,12 +84,20 @@ export class ScrapeOrchestrator {
             this.db.insertMessage(message);
             this.db.incrementMessagesScraped(jobId, 1);
             seenMessageIds.add(rawMsg.id);
+            newMessagesThisScroll++;
           }
         }
 
+        console.log(`  → Stored ${newMessagesThisScroll} new messages (${seenMessageIds.size} total unique)`);
+
         // Scroll up to load older messages
-        atTop = await scroller.scrollUp();
+        scrollCount++;
+        if (scrollCount < maxScrolls) {
+          atTop = await scroller.scrollUp();
+        }
       }
+
+      console.log(`Scraping complete: ${scrollCount} scrolls, ${seenMessageIds.size} unique messages`);
 
       // Mark job as completed
       this.db.updateScrapeJobStatus(jobId, 'completed');

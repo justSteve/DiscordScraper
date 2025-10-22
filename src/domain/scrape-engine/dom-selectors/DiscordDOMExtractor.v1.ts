@@ -21,21 +21,25 @@ export class DiscordDOMExtractorV1 {
    */
   async extractMessages(page: Page): Promise<RawMessageData[]> {
     // Use page.$$eval to run extraction logic in browser context
-    const messages = await page.$$eval('[class*="message"]', (messageElements) => {
+    // Updated selector: look for li elements within the messages list
+    const messages = await page.$$eval('ol[data-list-id="chat-messages"] > li', (messageElements) => {
       return messageElements.map((el: Element) => {
-        // Extract message ID from data attribute or element
-        const id = el.getAttribute('id') || el.getAttribute('data-message-id') || '';
+        // Extract message ID from div with id starting with "message-content-" or "chat-messages-"
+        const contentDiv = el.querySelector('[id^="message-content-"]') || el.querySelector('[id^="chat-messages-"]');
+        const id = contentDiv?.getAttribute('id')?.replace('message-content-', '').replace('chat-messages-', '') || '';
 
-        // Extract author information
+        // Extract author information - username span
         const authorEl = el.querySelector('[class*="username"]');
         const authorName = authorEl?.textContent?.trim() || '';
+        // Try data-text attribute for @mentions or textContent
+        const authorNameFallback = authorEl?.getAttribute('data-text')?.replace('@', '') || authorName;
         const authorId = authorEl?.getAttribute('data-user-id') || '';
 
-        // Extract avatar
+        // Extract avatar - look for img tag or background image
         const avatarEl = el.querySelector('[class*="avatar"] img');
         const authorAvatarUrl = avatarEl?.getAttribute('src') || undefined;
 
-        // Extract message content
+        // Extract message content - look for messageContent class
         const contentEl = el.querySelector('[class*="messageContent"]');
         const content = contentEl?.textContent?.trim() || undefined;
 
@@ -63,7 +67,7 @@ export class DiscordDOMExtractorV1 {
         return {
           id,
           author_id: authorId,
-          author_name: authorName,
+          author_name: authorNameFallback,
           author_avatar_url: authorAvatarUrl,
           content,
           timestamp,

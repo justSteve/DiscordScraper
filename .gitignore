@@ -38,3 +38,30 @@ coverage/
 
 # Git worktrees
 .worktrees/
+
+# Debug and test files
+debug-*.js
+debug-*.json
+debug-*.png
+test-auth.js
+create-cookies*.js
+seed-database.js
+view-messages*.js
+view-messages*.ps1
+scrape-results-*.txt
+message-types-debug.json
+discord-dom-debug.*
+windows-auth-setup.js
+setup-*.js
+setup-*.sh
+
+# Browser state (authentication)
+.playwright-state/
+.browser-data/
+
+# Export files
+*.txt
+!SCRAPING_STATUS.md
+!CLAUDE.md
+!AUTHENTICATION_GUIDE.md
+!README.md

@@ -23,11 +23,43 @@ router.post('/start', async (req, res) => {
       return res.status(400).json({ error: 'scrape_type must be "full" or "incremental"' });
     }
 
+    // Load config to find server info
+    const config = ConfigLoader.load('./discord-config.yaml');
+
+    // Find server and channel in config
+    let serverId: string | null = null;
+    let serverName = '';
+    let channelName = '';
+
+    for (const server of config.servers) {
+      const channel = server.channels.find(ch => ch.id === channel_id);
+      if (channel) {
+        serverId = server.id;
+        serverName = server.name;
+        channelName = channel.name;
+        break;
+      }
+    }
+
+    if (!serverId) {
+      return res.status(400).json({ error: `Channel ${channel_id} not found in config` });
+    }
+
+    // Ensure server and channel exist in database
+    try {
+      db.insertServer({ id: serverId, name: serverName });
+    } catch (e) {
+      // Ignore if already exists
+    }
+
+    try {
+      db.insertChannel({ id: channel_id, server_id: serverId, name: channelName, message_count: 0 });
+    } catch (e) {
+      // Ignore if already exists
+    }
+
     // Create job
     const jobId = db.createScrapeJob(channel_id, scrape_type);
-
-    // Load config and execute scrape synchronously
-    const config = ConfigLoader.load('./discord-config.yaml');
     const orchestrator = new ScrapeOrchestrator(db, config);
     await orchestrator.executeScrapeJob(jobId);
 

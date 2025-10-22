@@ -62,7 +62,17 @@ export class MessageScroller {
    * Wait for message elements to load in the DOM.
    */
   async waitForMessages(): Promise<void> {
-    await this.page.waitForSelector('[class*="message"]', { timeout: 10000 });
+    try {
+      await this.page.waitForSelector('[class*="message"]', { timeout: 10000 });
+    } catch (error) {
+      // Take screenshot for debugging
+      const screenshotPath = `./debug-screenshot-${Date.now()}.png`;
+      await this.page.screenshot({ path: screenshotPath, fullPage: true });
+      console.error(`Failed to find messages. Screenshot saved to: ${screenshotPath}`);
+      console.error(`Page URL: ${this.page.url()}`);
+      console.error(`Page title: ${await this.page.title()}`);
+      throw error;
+    }
   }
 
   /**
